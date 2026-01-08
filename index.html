@@ -97,6 +97,8 @@ const img=document.getElementById("pageImage");
 const prev=document.getElementById("prev");
 const next=document.getElementById("next");
 
+let currentAudio=null;
+
 function render(){
   img.src="./images/"+page+".png";
 
@@ -110,11 +112,18 @@ function render(){
     b.className="audio";
     b.style.top=(a.y*100)+"%";
     b.innerHTML="🔊";
-    const audio=new Audio(a.src);
-    b.onclick=()=>{audio.currentTime=0;audio.play();};
+    b.onclick=()=>{
+      if(currentAudio){
+        currentAudio.pause();
+        currentAudio.currentTime=0;
+      }
+      currentAudio=new Audio(a.src);
+      currentAudio.play();
+    };
     book.appendChild(b);
   });
 }
+
 
 prev.onclick=()=>{if(page>1){page--;render();}};
 next.onclick=()=>{if(page<totalPages){page++;render();}};
