@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Picture Book</title>
+<style>
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:black;
+}
+#book{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+#pageImage{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.nav{
+  position:absolute;
+  bottom:20px;
+  width:96px;
+  height:96px;
+  font-size:48px;
+  line-height:96px;
+  text-align:center;
+  color:white;
+  opacity:0.4;
+  user-select:none;
+}
+#prev{left:20px;}
+#next{right:20px;}
+
+.audio{
+  position:absolute;
+  right:40px;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  background:#ffffffaa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div id="book">
+  <img id="pageImage" src="">
+  <div id="prev" class="nav">⟨</div>
+  <div id="next" class="nav">⟩</div>
+</div>
+
+<script>
+const totalPages=7;
+let page=1;
+
+const audioMap={
+  1:[{y:0.66,src:"./audio/1.wav"}],
+  2:[{y:0.33,src:"./audio/2.wav"}],
+  3:[
+    {y:0.25,src:"./audio/3_1.wav"},
+    {y:0.50,src:"./audio/3_2.wav"},
+    {y:0.75,src:"./audio/3_3.wav"}
+  ],
+  4:[
+    {y:0.25,src:"./audio/4_1.wav"},
+    {y:0.50,src:"./audio/4_2.wav"},
+    {y:0.75,src:"./audio/4_3.wav"}
+  ],
+  5:[
+    {y:0.25,src:"./audio/5_1.wav"},
+    {y:0.50,src:"./audio/5_2.wav"},
+    {y:0.75,src:"./audio/5_3.wav"}
+  ],
+  6:[
+    {y:0.25,src:"./audio/6_1.wav"},
+    {y:0.50,src:"./audio/6_2.wav"},
+    {y:0.75,src:"./audio/6_3.wav"}
+  ],
+  7:[{y:0.33,src:"./audio/7.wav"}]
+};
+
+const book=document.getElementById("book");
+const img=document.getElementById("pageImage");
+const prev=document.getElementById("prev");
+const next=document.getElementById("next");
+
+function render(){
+  img.src="./images/"+page+".png";
+
+  prev.classList.toggle("enabled",page>1);
+  next.classList.toggle("enabled",page<totalPages);
+
+  document.querySelectorAll(".audio").forEach(e=>e.remove());
+
+  (audioMap[page]||[]).forEach(a=>{
+    const b=document.createElement("div");
+    b.className="audio";
+    b.style.top=(a.y*100)+"%";
+    b.innerHTML="🔊";
+    const audio=new Audio(a.src);
+    b.onclick=()=>{audio.currentTime=0;audio.play();};
+    book.appendChild(b);
+  });
+}
+
+prev.onclick=()=>{if(page>1){page--;render();}};
+next.onclick=()=>{if(page<totalPages){page++;render();}};
+
+render();
+
+/* fullscreen attempt (requires user gesture on most tablets) */
+document.addEventListener("click",()=>{
+  if(document.fullscreenElement)return;
+  if(book.requestFullscreen)book.requestFullscreen();
+},{once:true});
+</script>
+</body>
+</html>
